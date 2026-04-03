@@ -146,4 +146,4 @@ echo # prázdný řádek
 # find / -perm -4000 -type f 2>/dev/null vypsání (jenom) souborů se suid bitem (složky to nevypisuje) 
 # tento příkaz find tu bude na určitou dobu, později bych projel možnosti v gtfobins a udělal podmínky na možnosti eskalace privilegií
 
-find / -writable -type f 2>/dev/null | head -n 10
+#find / -writable -type f 2>/dev/null | head -n 10
