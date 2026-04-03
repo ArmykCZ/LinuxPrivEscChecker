@@ -20,7 +20,7 @@ if [ "$USER" == "root" ]; then
 	echo "Jsi root"
 else
 	echo "Nejsi root"
-	echo "Jsi uživatel: $(whoami)"
+	echo "Jsi uživatel: $USER"
 fi
 
 echo #Pro prázdný řádek 
@@ -73,6 +73,17 @@ echo -e "\n====${RED}SUID${NC}====\n"
 
 find / -perm -4000 2>/dev/null 
 # tento příkaz find tu bude na určitou dobu, později bych projel možnosti v gtfobins a udělal podmínky na možnosti eskalace privilegií
+
+
+
+
+
+
+
+
+
+
+
 
 
 
