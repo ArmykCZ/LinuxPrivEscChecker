@@ -7,6 +7,7 @@
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 NC="\033[0m" # zakončení barvy
+BLUE='\033[0;34m'
 
 #PRO ZÁKLADNÍ INFORMACE
 
@@ -77,7 +78,7 @@ echo -e "\n====${RED}SUID${NC}====\n"
 
 #vytvoření systému hledání možných zranitelností v programech se SUID bitem
 
-# 
+#mega ultra unprivileged seznam XDDD pro https://gtfobins.org/#//^unprivileged$ 
 seznam=(7z R aa-exec ab acr alpine ansible-playbook ansible-test aoss apache2 apache2ctl apport-cli
 apt apt-get aptitude ar aria2c arj arp as ascii-xfr ascii85 ash aspell asterisk at atobm
 autoconf autoheader autoreconf awk aws base32 base58 base64 basenc basez bash bashbug
@@ -113,19 +114,20 @@ yelp yt-dlp zathura zcat zgrep zic zip zless zsh zsoelim zypper)
 
 
 
-find / -perm -4000 -type f 2>/dev/null | while IFS= read -r file; do
-    binarka=$(basename "$file")
+find / -perm -4000 -type f 2>/dev/null | while IFS= read -r file; do   #-r aby nemazal v path /, IFS pro to, aby nerozděloval podle mezer a speciálních znaků
+    binarka=$(basename "$file") # uložení do proměnné, basename znamená, že veme celou file (cestu souboru) a veme jenom poslední část, tak že pro nás název aplikace ezz prostě :D
 
-    for item in "${seznam[@]}"; do
-        if [ "$binarka" = "$item" ]; then
-            echo "[!] SUID nalezen: $file"
+    for item in "${seznam[@]}"; do #veme každý item z našeho velkého seznamu XDDD, zrovna mi tady pomohl ai jo :I, klid XD
+        if [ "$binarka" = "$item" ]; then   #každý vypsaný řádek z find příkazu se projede touto hračkou a jestli se název programu ROVNÁ s nějakým z itemů v seznamu, tak to dá program vědět :D
+            echo -e "${RED}[!]UNPRIVILEGED SUID nalezen: $file${NC}"
             echo "    → $binarka je v seznamu (zkontroluj GTFOBins)"
+	    echo -e "${BLUE}https://gtfobins.org/gtfobins/$item/${NC}"
         fi
     done
 done
 
 
-
+echo 
 
 
 
