@@ -75,6 +75,61 @@ fi
 
 echo -e "\n====${RED}SUID${NC}====\n"
 
+#vytvoření systému hledání možných zranitelností v programech se SUID bitem
+
+# 
+seznam=(7z R aa-exec ab acr alpine ansible-playbook ansible-test aoss apache2 apache2ctl apport-cli
+apt apt-get aptitude ar aria2c arj arp as ascii-xfr ascii85 ash aspell asterisk at atobm
+autoconf autoheader autoreconf awk aws base32 base58 base64 basenc basez bash bashbug
+batcat bbot bc bconsole bee borg bridge bundle bundler busctl busybox byebug bzip2
+c89 c99 cabal cancel capsh cargo cat cc cdist certbot check_by_ssh check_cups check_log
+check_memory check_raid check_ssl_cert check_statusfile choom chrt clamscan clisp cmake
+cmp cobc code codex column comm composer cowsay cowthink cp cpan cpio cpulimit crash
+crontab csh csplit csvtool cupsfilter curl cut dash date dc dd debugfs dhclient dialog
+diff dig distcc dmesg dmidecode dmsetup dnsmasq doas docker dos2unix dosbox dotnet dpkg
+dstat dvips easy_install easyrsa eb ed egrep elvish emacs enscript env eqn espeak ex
+exiftool expand expect facter fastfetch ffmpeg fgrep file find finger firejail fish flock
+fmt fold forge fping ftp fzf g++ gawk gcc gcloud gcore gdb gem genie genisoimage ghc ghci
+gimp ginsh git gnuplot go grc grep gtester guile gzip hashcat hd head hexdump hg highlight
+hping3 iconv iftop ionice ip irb ispell java jjs joe join journalctl jq jrunscript jshell
+jtag julia knife ksh ksshell kubectl last lastb latex latexmk ld.so ldconfig less lftp
+links loginctl logrotate logsave look lp ltrace lua lualatex luatex lwp-download lwp-request
+m4 mail make man mawk minicom more mosquitto msfconsole msgattrib msgcat msgconv msgfilter
+msgmerge msguniq mtr multitime mutt mv mypy mysql nano nasm nawk nc ncdu ncftp needrestart
+neofetch nft nginx nice nl nm nmap node nohup npm nroff nsenter ntpdate nvim octave od
+opencode openssl openvpn pandoc paste pax pdb pdflatex pdftex perf perl perlbug pexec pg
+php pic pico pidstat pip pipx plymouth podman poetry posh pr procmail pry psftp psql ptx
+puppet pwsh pygmentize pyright python qpdf rake ranger rc readelf red redcarpet redis
+restic rev rlogin rlwrap rpm rpmdb rpmquery rpmverify rsync rtorrent ruby run-mailcap
+run-parts runscript rustc rustdoc rustfmt rustup rvim sash scanmem scp screen script scrot
+sed service setarch setlock sftp sg shred shuf slsh smbclient socat socket soelim softlimit
+sort split sqlite3 sqlmap ss ssh ssh-agent ssh-copy-id ssh-keygen ssh-keyscan sshfs sshpass
+start-stop-daemon stdbuf strace strings sysctl systemctl tac tail tar task taskset tasksh
+tbl tclsh tcpdump tcsh tdbtool tee telnet terraform tex tftp tic time timedatectl timeout
+tmate tmux top torify torsocks troff tsc tshark ul unexpand uniq unshare urlget uuencode uv
+vagrant valgrind vi view vim vimdiff virsh volatility w3m watch wc wget whiptail whois
+wireshark wish xargs xdg-user-dir xdotool xelatex xetex xmodmap xmore xpad xxd xz yarn yash
+yelp yt-dlp zathura zcat zgrep zic zip zless zsh zsoelim zypper)
+
+
+
+find / -perm -4000 -type f 2>/dev/null | while IFS= read -r file; do
+    binarka=$(basename "$file")
+
+    for item in "${seznam[@]}"; do
+        if [ "$binarka" = "$item" ]; then
+            echo "[!] SUID nalezen: $file"
+            echo "    → $binarka je v seznamu (zkontroluj GTFOBins)"
+        fi
+    done
+done
+
+
+
+
+
+
+
 find / -perm -4000 -type f 2>/dev/null #vypsání (jenom) souborů se suid bitem (složky to nevypisuje) 
 # tento příkaz find tu bude na určitou dobu, později bych projel možnosti v gtfobins a udělal podmínky na možnosti eskalace privilegií
 
