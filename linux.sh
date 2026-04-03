@@ -77,9 +77,9 @@ echo #Pro prázdný řádek
 echo -e "\n====${BLUE}SUDO${NC}====\n"
 
 if sudo -n -l >/dev/null 2>&1; then # pokud je vyžadováno heslo, tak -n to když tak přeskočí
-    echo "sudo -l jde využít bez hesla, ale pžíkazy vyžadují heslo"
+    echo -e "${BLUE}sudo -l lze spustit bez hesla (listing)${NC}"
 	if sudo -n -l 2>/dev/null | grep -q "NOPASSWD"; then   #vnoření podmínka
-		echo -e "${YELLOW}EXISTUJÍ PŘÍKAZY BEZ HESLA${NC}"
+		echo -e "${RED}EXISTUJÍ PŘÍKAZY BEZ HESLA${NC}"
 	fi
 else
     echo "sudo -l vyžaduje heslo nebo není dostupné"
