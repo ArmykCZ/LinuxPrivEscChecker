@@ -10,6 +10,8 @@ NC="\033[0m" # zakončení barvy
 
 #PRO ZÁKLADNÍ INFORMACE
 
+#==========================================================================================================================================
+
 echo -e "====${RED}ZÁKLÁDNÍ INFORMACE${NC}====\n"
 
 USER=$(whoami)
@@ -18,8 +20,10 @@ if [ "$USER" == "root" ]; then
 	echo "Jsi root"
 else
 	echo "Nejsi root"
-	echo "Jsi uživatel: " && whoami
+	echo "Jsi uživatel: $(whoami)"
 fi
+
+echo #Pro prázdný řádek 
 
 id
 
@@ -34,6 +38,9 @@ fi
 
 
 
+#==========================================================================================================================================
+
+
 #SYSTEM INFO
 
 echo -e "\n====${RED}SYSTEM INFO${NC}====\n"
@@ -42,6 +49,30 @@ echo -e "\n====${RED}SYSTEM INFO${NC}====\n"
 cat /etc/os-release | grep "^NAME="
 echo #Pro prázdný řádek  
 uname -a 
+
+echo #Pro prázdný řádek 
+
+#==========================================================================================================================================
+
+
+echo -e "\n====${RED}SUDO${NC}====\n"
+
+
+if sudo -n -l >/dev/null 2>&1; then
+    echo "sudo -l jde využít bez hesla"
+else
+    echo "sudo -l vyžaduje heslo nebo není dostupné"
+fi
+
+
+
+#==========================================================================================================================================
+
+
+echo -e "\n====${RED}SUID${NC}====\n"
+
+find / -perm -4000 2>/dev/null 
+# tento příkaz find tu bude na určitou dobu, později bych projel možnosti v gtfobins a udělal podmínky na možnosti eskalace privilegií
 
 
 
