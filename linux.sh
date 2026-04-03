@@ -25,15 +25,15 @@ fi
 
 echo #Pro prázdný řádek 
 
-id
+groups #vypíše pouze group bez žádných id
 
 # -q u grepu pro quiet (grep nic nevypíše, jenom pro podmínku)
-if id | grep -q "docker"; then
-	echo -e "${GREEN}Nacházíš se v Docker group - využití eskalace priviligií!!${NC}\n"
+if groups | grep -qw "docker"; then #-q pro quit a -w pro přesnou shodu celého zapsaného textu (docker)
+	echo -e "\n${GREEN}Nacházíš se v Docker group - využití eskalace priviligií!!${NC}\n"
 fi
 
-if id | grep -q  "uid=0"; then
-	echo -e "${GREEN}Jsi root!!${NC}\n"
+if [ "$EUID" -eq 0 ]; then #proměnná pro id uživatele
+	echo -e "\n${GREEN}Jsi root!!${NC}\n"
 fi
 
 
@@ -46,7 +46,7 @@ fi
 echo -e "\n====${RED}SYSTEM INFO${NC}====\n"
 
 # ^ znamená začátek řádku, tak že to nebude vypisovat řádky, které obsahuje někde v textu name=
-cat /etc/os-release | grep "^NAME="
+grep "^NAME=" /etc/os-release
 echo #Pro prázdný řádek  
 uname -a 
 
@@ -58,11 +58,15 @@ echo #Pro prázdný řádek
 echo -e "\n====${RED}SUDO${NC}====\n"
 
 
-if sudo -n -l >/dev/null 2>&1; then
-    echo "sudo -l jde využít bez hesla"
+if sudo -n -l >/dev/null 2>&1; then # pokud je vyžadováno heslo, tak -n to když tak přeskočí
+    echo "sudo -l jde využít bez hesla, ale pžíkazy vyžadují heslo"
+	if sudo -n -l 2>/dev/null | grep -q "NOPASSWD"; then   #vnoření podmínka
+		echo -e "${GREEN}EXISTUJÍ PŘÍKAZY BEZ HESLA${NC}"
+	fi
 else
     echo "sudo -l vyžaduje heslo nebo není dostupné"
 fi
+
 
 
 
@@ -71,21 +75,6 @@ fi
 
 echo -e "\n====${RED}SUID${NC}====\n"
 
-find / -perm -4000 2>/dev/null 
+find / -perm -4000 -type f 2>/dev/null #vypsání (jenom) souborů se suid bitem (složky to nevypisuje) 
 # tento příkaz find tu bude na určitou dobu, později bych projel možnosti v gtfobins a udělal podmínky na možnosti eskalace privilegií
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
