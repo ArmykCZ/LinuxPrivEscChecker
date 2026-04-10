@@ -1,5 +1,5 @@
 #!/bin/bash
-#test_
+#test__
 # použití parametru -e u echa z důvodů interpretování escape sekvence (pro zbarvení textu)
 
 #barvy
