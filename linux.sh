@@ -76,6 +76,12 @@ uname -a
 echo -e "${BLUE}Pokus se na internetu najít exploit pro danou verzi linuxu/kernelu ${NC}"
 echo #Pro prázdný řádek 
 
+if netstat -ano | grep -w "127.0.0.1"; then
+	echo -e "${GREEN}Na počítačí běží localhost služba${NC}"
+fi
+
+
+
 #==========================================================================================================================================
 
 echo -e "\n====${BLUE}SUDO${NC}====\n"
@@ -95,6 +101,7 @@ fi
 echo -e "\n====${BLUE}SUID${NC}====\n"
 
 #vytvoření systému hledání možných zranitelností v programech se SUID bitem
+echo -e "${BLUE}Pokud nebylo nic vypsáno, tak program nenašel žádnou zranitelnost v SUID${NC}"
 
 #mega ultra unprivileged seznam XDDD pro https://gtfobins.org/#//^unprivileged$ 
 seznam=(7z R aa-exec ab acr alpine ansible-playbook ansible-test aoss apache2 apache2ctl apport-cli
@@ -132,16 +139,46 @@ yelp yt-dlp zathura zcat zgrep zic zip zless zsh zsoelim zypper)
 
 find / -perm -4000 -type f 2>/dev/null | while IFS= read -r file; do #-r aby nemazal v path /, IFS pro to, aby nemazal mezery
     binarka=$(basename "$file") # uložení do proměnné, basename veme poslední část celé cesty/file,tak že název programu  
-
     # vylepšená kontrola, jestli je binarka v seznamu
-    if printf '%s\n' "${seznam[@]}" | grep -qx "$binarka"; then # vypsání každou položku seznamu na jeden řádek, grep -q (quiet), -x pro přesnou shodu
-        echo -e "${RED}[!] UNPRIVILEGED SUID nalezen: $file${NC}"
-        echo "    → $binarka je v seznamu (zkontroluj GTFOBins)"
+if printf '%s\n' "${seznam[@]}" | grep -qx "$binarka"; then # vypsání každou položku seznamu na jeden řádek, grep -q (quiet), -x pro přesnou shodu
+	echo -e "${RED}[!] UNPRIVILEGED SUID nalezen: $file${NC}"
+	echo "    → $binarka je v seznamu (zkontroluj GTFOBins)"
         echo -e "${BLUE}https://gtfobins.org/gtfobins/$binarka/${NC}"
     fi
 done
 
+
 echo # prázdný řádek 
+
+echo -e "====${BLUE}GETCAP${NC}====\n"
+
+getcap -r / 2>/dev/null | while IFS= read -r line; do # while read -r line každý řádek výstupu uloží do $line 
+	binarka=$(echo $line | awk "{print $1}")
+	cap=$(echo $line | awk "{print $2}")
+	nazev=$(basename $binarka)
+if echo $cap | grep -q "cap_setuid"; then
+	echo -e "${RED}[!] KRITICKÉ - ${BLUE}cap_setuid${NC}: $line${NC}"
+        echo -e "${BLUE}https://gtfobins.github.io/gtfobins/$nazev/${NC}"
+elif echo $cap | grep -q "cap_net_raw"; then
+	echo -e "${YELLOW}[!] MEDIUM - ${BLUE}cap_net_raw${NC}: $line${NC}"
+	echo "umožňuje zachytávat síťový provoz, pro MITM útok"
+elif echo $cap | grep -q "cap_dac_override"; then
+        echo -e "${RED}[!] KRITICKÉ - ${BLUE}cap_dac_override${NC}: $line${NC}"
+        echo "může číst/zapisovat libovolné soubory!"
+else
+	echo -e "${GREEN}[i] LOW: $line${NC}"
+fi
+done
+
+
+echo -e "\n====${BLUE}CRONTAB${NC}===="
+
+if [ ! -f "/etc/crontab" ]; then  #podmínka, jestli soubor crontab existuje
+    echo -e "${BLUE}Crontab soubor neexistuje.${NC}"
+else
+	grep -v "^#" /etc/crontab 2>/dev/null #grep vymaže řádky, které začínají #
+
+fi
 
 # find / -perm -4000 -type f 2>/dev/null vypsání (jenom) souborů se suid bitem (složky to nevypisuje) 
 # tento příkaz find tu bude na určitou dobu, později bych projel možnosti v gtfobins a udělal podmínky na možnosti eskalace privilegií
